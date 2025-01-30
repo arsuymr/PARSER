@@ -8,82 +8,88 @@ PARSER_BEGIN(Parser)
 public class Parser {
   public static void main(String[] args) throws ParseException {
     Parser parser = new Parser(System.in);
-    parser.Z();
+    parser.parse();
     System.out.println("Parsing completed successfully.");
   }
 }
 
 PARSER_END(Parser)
-TOKEN : { <ID : "[A-Z][A-Za-z0-9]*_"> }  // Identifiants : commencent par une majuscule et se terminent par "_"
-TOKEN : { <DOLLAR : "[\\+\\*/]"> }        // Les opérateurs : +, *, /
-TOKEN : { <EQ : "[><]"> }                  // Les opérateurs : >, <
-TOKEN : { <AT : "\\(\\)"> }                // Les délimiteurs : ( )
-TOKEN : { <AND : "\\{\\}"> }               // Les délimiteurs : { }
-TOKEN : { <HASH : "#"> }               // Les délimiteurs : { }
+
+TOKEN : { <ID : "id">}  // Identifiants : commencent par une majuscule et se terminent par "_"
+TOKEN : { <DOLLAR : "$"> }        // Les opérateurs : +, *, /
+TOKEN : { <EQ : "="> }                  // Les opérateurs : >, <
+TOKEN : { <AT : "@"> }                // Les délimiteurs : ( )
+TOKEN : { <AND : "&">}              // Les délimiteurs : { }
+TOKEN : { <HASH : "#"> }                   // Le délimiteur : #
 
 SKIP : { " " | "\t" | "\n" | "\r" }  // Pour ignorer les espaces blancs, tabulations et nouvelles lignes
 
-void Z() : {}
+void parse() : {}
 {
-  T() <HASH>    // Z → T #
-}
-
-void T() : {}
-{
-  S() | {}      // T → S | ε
-}
-
-void S() : {}
-{
-  A() <AT> B()  // S → A @ B
-| B() <AND> A() // S → B & A
-}
-
-void A() : {}
-{
-  B() E()      // A → B E
-| <EQ> F()     // A → = F
+    E()
 }
 
 void E() : {}
 {
-  <DOLLAR> C()  // E → $ C
-| <AND> A() <EQ> F()  // E → & A = F
+    T() <HASH>
 }
 
-void F() : {}
+void T() : {}
 {
-  S() C()    // F → S C
-| C()        // F → C
+    S() 
+    | {}
 }
 
-void C() : {}
+void S() : {}
 {
-  <AT> B() <EQ> F() // C → @ B = F
-| {}                // C → ε
+    A() <AT> B() 
+    | B() <DOLLAR> A() 
 }
 
-void B() : {}
+void A() : {}
 {
-  <EQ> G()    // B → = G
-| <ID> H()    // B → id H
+    B() G()  | <EQ>  F() 
 }
 
 void G() : {}
 {
-  S() C() <ID> D() // G → S C id D
-| C() <ID> D()     // G → C id D
+    <DOLLAR> X() 
+    | <AND> A() <EQ> F() 
 }
 
-void H() : {}
+void F() : {}
 {
-  S() D()   // H → S D
-| D()       // H → D
+    S() X() 
+    | X() 
 }
 
-void D() : {}
+void X() : {}
 {
-  <DOLLAR> C() <ID> D() // D → $ C id D
-| <DOLLAR> A() <EQ> G() // D → $ A = G
-| {}                      // D → ε
+    <AT> B() <EQ> F() 
+    | {}
+}
+
+void B() : {}
+{
+    <EQ> L() 
+    | <ID> K() 
+}
+
+void L() : {}
+{
+    S() X() <ID> Y() 
+    | X() <ID> Y() 
+}
+
+void K() : {}
+{
+    S() Y() 
+    | Y() 
+}
+
+void Y() : {}
+{
+    <DOLLAR> X() <ID> Y() 
+    | <AND> A() <EQ> L() 
+    | {}
 }

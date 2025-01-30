@@ -2,12 +2,16 @@
 public class Parser implements ParserConstants {
   public static void main(String[] args) throws ParseException {
     Parser parser = new Parser(System.in);
-    parser.Z();
+    parser.parse();
     System.out.println("Parsing completed successfully.");
   }
 
                                      // Pour ignorer les espaces blancs, tabulations et nouvelles lignes
-  final public void Z() throws ParseException {
+  final public void parse() throws ParseException {
+    E();
+  }
+
+  final public void E() throws ParseException {
     T();
     jj_consume_token(HASH);
   }
@@ -31,10 +35,10 @@ public class Parser implements ParserConstants {
       A();
       jj_consume_token(AT);
       B();
-      // break;
-      // B();
-      // jj_consume_token(AND);
-      // A();
+      break;
+      B();
+      jj_consume_token(DOLLAR);
+      A();
       break;
     default:
       jj_la1[1] = jj_gen;
@@ -48,11 +52,11 @@ public class Parser implements ParserConstants {
     case ID:
     case EQ:
       B();
-      E();
+      G();
       break;
-      // jj_consume_token(EQ);
-      // F();
-      // break;
+      jj_consume_token(EQ);
+      F();
+      break;
     default:
       jj_la1[2] = jj_gen;
       jj_consume_token(-1);
@@ -60,11 +64,11 @@ public class Parser implements ParserConstants {
     }
   }
 
-  final public void E() throws ParseException {
+  final public void G() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DOLLAR:
       jj_consume_token(DOLLAR);
-      C();
+      X();
       break;
     case AND:
       jj_consume_token(AND);
@@ -84,15 +88,15 @@ public class Parser implements ParserConstants {
     case ID:
     case EQ:
       S();
-      C();
+      X();
       break;
     default:
       jj_la1[4] = jj_gen;
-      C();
+      X();
     }
   }
 
-  final public void C() throws ParseException {
+  final public void X() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case AT:
       jj_consume_token(AT);
@@ -110,11 +114,11 @@ public class Parser implements ParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EQ:
       jj_consume_token(EQ);
-      G();
+      L();
       break;
     case ID:
       jj_consume_token(ID);
-      H();
+      K();
       break;
     default:
       jj_la1[6] = jj_gen;
@@ -123,19 +127,19 @@ public class Parser implements ParserConstants {
     }
   }
 
-  final public void G() throws ParseException {
+  final public void L() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
     case EQ:
       S();
-      C();
+      X();
       jj_consume_token(ID);
-      D();
+      Y();
       break;
     case AT:
-      C();
+      X();
       jj_consume_token(ID);
-      D();
+      Y();
       break;
     default:
       jj_la1[7] = jj_gen;
@@ -144,32 +148,33 @@ public class Parser implements ParserConstants {
     }
   }
 
-  final public void H() throws ParseException {
+  final public void K() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
     case EQ:
       S();
-      D();
+      Y();
       break;
     default:
       jj_la1[8] = jj_gen;
-      D();
+      Y();
     }
   }
 
-  final public void D() throws ParseException {
+  final public void Y() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DOLLAR:
       jj_consume_token(DOLLAR);
-      C();
+      X();
       jj_consume_token(ID);
-      D();
+      Y();
       break;
-      // jj_consume_token(DOLLAR);
-      // A();
-      // jj_consume_token(EQ);
-      // G();
-      // break;
+    case AND:
+      jj_consume_token(AND);
+      A();
+      jj_consume_token(EQ);
+      L();
+      break;
     default:
       jj_la1[9] = jj_gen;
 
@@ -191,7 +196,7 @@ public class Parser implements ParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xa,0xa,0xa,0x24,0xa,0x10,0xa,0x1a,0xa,0x4,};
+      jj_la1_0 = new int[] {0xa,0xa,0xa,0x24,0xa,0x10,0xa,0x1a,0xa,0x24,};
    }
 
   /** Constructor with InputStream. */
