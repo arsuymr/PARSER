@@ -8,11 +8,31 @@ public class ParserTokenManager implements ParserConstants
   public  java.io.PrintStream debugStream = System.out;
   /** Set debug output. */
   public  void setDebugStream(java.io.PrintStream ds) { debugStream = ds; }
+private final int jjStopStringLiteralDfa_0(int pos, long active0)
+{
+   switch (pos)
+   {
+      default :
+         return -1;
+   }
+}
+private final int jjStartNfa_0(int pos, long active0)
+{
+   return jjMoveNfa_0(jjStopStringLiteralDfa_0(pos, active0), pos + 1);
+}
 private int jjStopAtPos(int pos, int kind)
 {
    jjmatchedKind = kind;
    jjmatchedPos = pos;
    return pos + 1;
+}
+private int jjStartNfaWithStates_0(int pos, int kind, int state)
+{
+   jjmatchedKind = kind;
+   jjmatchedPos = pos;
+   try { curChar = input_stream.readChar(); }
+   catch(java.io.IOException e) { return pos + 1; }
+   return jjMoveNfa_0(state, pos + 1);
 }
 private int jjMoveStringLiteralDfa0_0()
 {
@@ -28,35 +48,93 @@ private int jjMoveStringLiteralDfa0_0()
          return jjStopAtPos(0, 3);
       case 64:
          return jjStopAtPos(0, 4);
-      case 105:
-         return jjMoveStringLiteralDfa1_0(0x2L);
       default :
-         return 1;
+         return jjMoveNfa_0(0, 0);
    }
 }
-private int jjMoveStringLiteralDfa1_0(long active0)
+private int jjMoveNfa_0(int startState, int curPos)
 {
-   try { curChar = input_stream.readChar(); }
-   catch(java.io.IOException e) {
-      return 1;
-   }
-   switch(curChar)
+   //int[] nextStates; // not used
+   int startsAt = 0;
+   jjnewStateCnt = 3;
+   int i = 1;
+   jjstateSet[0] = startState;
+   //int j; // not used
+   int kind = 0x7fffffff;
+   for (;;)
    {
-      case 100:
-         if ((active0 & 0x2L) != 0L)
-            return jjStopAtPos(1, 1);
-         break;
-      default :
-         return 2;
+      if (++jjround == 0x7fffffff)
+         ReInitRounds();
+      if (curChar < 64)
+      {
+         long l = 1L << curChar;
+         do
+         {
+            switch(jjstateSet[--i])
+            {
+               case 1:
+                  if ((0x3ff000000000000L & l) != 0L)
+                     jjAddStates(0, 1);
+                  break;
+               default : break;
+            }
+         } while(i != startsAt);
+      }
+      else if (curChar < 128)
+      {
+         long l = 1L << (curChar & 077);
+         do
+         {
+            switch(jjstateSet[--i])
+            {
+               case 0:
+                  if ((0x7fffffeL & l) != 0L)
+                     jjCheckNAddTwoStates(1, 2);
+                  break;
+               case 1:
+                  if ((0x7fffffe00000000L & l) != 0L)
+                     jjCheckNAddTwoStates(1, 2);
+                  break;
+               case 2:
+                  if (curChar == 95)
+                     kind = 1;
+                  break;
+               default : break;
+            }
+         } while(i != startsAt);
+      }
+      else
+      {
+         int i2 = (curChar & 0xff) >> 6;
+         long l2 = 1L << (curChar & 077);
+         do
+         {
+            switch(jjstateSet[--i])
+            {
+               default : break;
+            }
+         } while(i != startsAt);
+      }
+      if (kind != 0x7fffffff)
+      {
+         jjmatchedKind = kind;
+         jjmatchedPos = curPos;
+         kind = 0x7fffffff;
+      }
+      ++curPos;
+      if ((i = jjnewStateCnt) == (startsAt = 3 - (jjnewStateCnt = startsAt)))
+         return curPos;
+      try { curChar = input_stream.readChar(); }
+      catch(java.io.IOException e) { return curPos; }
    }
-   return 2;
 }
 static final int[] jjnextStates = {
+   1, 2, 
 };
 
 /** Token literal values. */
 public static final String[] jjstrLiteralImages = {
-"", "\151\144", "\44", "\75", "\100", "\46", "\43", null, null, null, null, };
+"", null, "\44", "\75", "\100", "\46", "\43", null, null, null, null, };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
@@ -69,8 +147,8 @@ static final long[] jjtoSkip = {
    0x780L, 
 };
 protected SimpleCharStream input_stream;
-private final int[] jjrounds = new int[0];
-private final int[] jjstateSet = new int[0];
+private final int[] jjrounds = new int[3];
+private final int[] jjstateSet = new int[6];
 protected char curChar;
 /** Constructor. */
 public ParserTokenManager(SimpleCharStream stream){
@@ -97,7 +175,7 @@ private void ReInitRounds()
 {
    int i;
    jjround = 0x80000001;
-   for (i = 0; i-- > 0;)
+   for (i = 3; i-- > 0;)
       jjrounds[i] = 0x80000000;
 }
 

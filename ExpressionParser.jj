@@ -15,11 +15,11 @@ public class Parser {
 
 PARSER_END(Parser)
 
-TOKEN : { <ID : "id">}  // Identifiants : commencent par une majuscule et se terminent par "_"
-TOKEN : { <DOLLAR : "$"> }        // Les opérateurs : +, *, /
-TOKEN : { <EQ : "="> }                  // Les opérateurs : >, <
-TOKEN : { <AT : "@"> }                // Les délimiteurs : ( )
-TOKEN : { <AND : "&">}              // Les délimiteurs : { }
+TOKEN : { < ID : ["A"-"Z"] (["a"-"z","0"-"9"])* "_" > }
+TOKEN : { <DOLLAR : : ["+", "*", "/"] > }        // Les opérateurs : +, *, /
+TOKEN : { <EQ : : [">", "<"] > }                 // Les opérateurs : >, <
+TOKEN : { <AT :  ["(", ")"] > }             // Les délimiteurs : ( )
+TOKEN : { <AND : : ["{", "}"] > }           // Les délimiteurs : { }
 TOKEN : { <HASH : "#"> }                   // Le délimiteur : #
 
 SKIP : { " " | "\t" | "\n" | "\r" }  // Pour ignorer les espaces blancs, tabulations et nouvelles lignes
@@ -43,12 +43,11 @@ void T() : {}
 void S() : {}
 {
     A() <AT> B() 
-    | B() <DOLLAR> A() 
 }
 
 void A() : {}
 {
-    B() G()  | <EQ>  F() 
+  <EQ>  F() 
 }
 
 void G() : {}
@@ -59,14 +58,12 @@ void G() : {}
 
 void F() : {}
 {
-    S() X() 
-    | X() 
+    X() 
 }
 
 void X() : {}
 {
-    <AT> B() <EQ> F() 
-    | {}
+    {}
 }
 
 void B() : {}
@@ -78,18 +75,15 @@ void B() : {}
 void L() : {}
 {
     S() X() <ID> Y() 
-    | X() <ID> Y() 
 }
 
 void K() : {}
 {
-    S() Y() 
-    | Y() 
+    Y() 
+ 
 }
 
 void Y() : {}
 {
-    <DOLLAR> X() <ID> Y() 
-    | <AND> A() <EQ> L() 
-    | {}
+  {}
 }

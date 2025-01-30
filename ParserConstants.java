@@ -27,7 +27,7 @@ public interface ParserConstants {
   /** Literal token values. */
   String[] tokenImage = {
     "<EOF>",
-    "\"id\"",
+    "<ID>",
     "\"$\"",
     "\"=\"",
     "\"@\"",
