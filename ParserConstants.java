@@ -18,8 +18,6 @@ public interface ParserConstants {
   int AT = 4;
   /** RegularExpression Id. */
   int AND = 5;
-  /** RegularExpression Id. */
-  int HASH = 6;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -28,11 +26,10 @@ public interface ParserConstants {
   String[] tokenImage = {
     "<EOF>",
     "<ID>",
-    "\"$\"",
-    "\"=\"",
-    "\"@\"",
-    "\"&\"",
-    "\"#\"",
+    "<DOLLAR>",
+    "<EQ>",
+    "<AT>",
+    "<AND>",
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",

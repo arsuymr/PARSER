@@ -1,89 +1,267 @@
 options {
   STATIC = false;
-  LOOKAHEAD = 1; // Utilisation d'un lookahead de 1
+  LOOKAHEAD = 1;
 }
 
 PARSER_BEGIN(Parser)
 
+import java.io.*;
+import java.util.*;
+
 public class Parser {
-  public static void main(String[] args) throws ParseException {
-    Parser parser = new Parser(System.in);
-    parser.parse();
-    System.out.println("Parsing completed successfully.");
+  private PrintWriter astWriter;
+  private int indentLevel = 0;
+  
+  public void initASTWriter(String outputFile) {
+    try {
+      astWriter = new PrintWriter(new FileWriter(outputFile));
+    } catch (IOException e) {
+      System.err.println("Erreur lors de la création du fichier AST: " + e.getMessage());
+      astWriter = new PrintWriter(System.out);
+    }
+  }
+  
+  private void writeNode(String nodeName) {
+    if (astWriter == null) {
+      astWriter = new PrintWriter(System.out);
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < indentLevel; i++) {
+      sb.append("  ");
+    }
+    sb.append(nodeName);
+    astWriter.println(sb.toString());
+    astWriter.flush();
+  }
+  
+  private void writeTerminal(String tokenName) {
+    if (astWriter == null) {
+      astWriter = new PrintWriter(System.out);
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < indentLevel; i++) {
+      sb.append("  ");
+    }
+    // Conversion des noms de tokens avec if-else
+    String displayName = tokenName;
+    if (tokenName.equals("ID")) {
+      displayName = "Id";
+    } else if (tokenName.equals("DOLLAR")) {
+      displayName = "$";
+    } else if (tokenName.equals("EQ")) {
+      displayName = "=";
+    } else if (tokenName.equals("AT")) {
+      displayName = "@";
+    } else if (tokenName.equals("AND")) {
+      displayName = "&";
+    } else if (tokenName.equals("HASH")) {
+      displayName = "#";
+    }
+    sb.append(displayName);
+    astWriter.println(sb.toString());
+    astWriter.flush();
+  }
+  
+  public void closeASTWriter() {
+    if (astWriter != null) {
+      astWriter.close();
+    }
   }
 }
 
 PARSER_END(Parser)
 
-TOKEN : { < ID : ["A"-"Z"] (["a"-"z","0"-"9"])* "_" > }
-TOKEN : { <DOLLAR : : ["+", "*", "/"] > }        // Les opérateurs : +, *, /
-TOKEN : { <EQ : : [">", "<"] > }                 // Les opérateurs : >, <
-TOKEN : { <AT :  ["(", ")"] > }             // Les délimiteurs : ( )
-TOKEN : { <AND : : ["{", "}"] > }           // Les délimiteurs : { }
-TOKEN : { <HASH : "#"> }                   // Le délimiteur : #
+TOKEN : { < ID : ["A"-"Z"] (["a"-"z","0"-"9","A"-"Z"])* "_" > }
+TOKEN : { <DOLLAR : ["+", "*", "/"] > }
+TOKEN : { <EQ : [">", "<"] > }
+TOKEN : { <AT : ["(", ")"] > }
+TOKEN : { <AND : ["{", "}"] > }
 
-SKIP : { " " | "\t" | "\n" | "\r" }  // Pour ignorer les espaces blancs, tabulations et nouvelles lignes
+
+SKIP : { " " | "\t" | "\n" | "\r" }
 
 void parse() : {}
 {
-    E()
+  {
+    writeNode("Programme");
+    indentLevel++;
+  }
+  E()
+  {
+    indentLevel--;
+  }
 }
 
 void E() : {}
 {
-    T() <HASH>
+  {
+    writeNode("E");
+    indentLevel++;
+  }
+  T() 
+  {
+    writeTerminal("HASH");
+  }
+  <EOF>
+  {
+    indentLevel--;
+  }
 }
 
 void T() : {}
 {
+  {
+    writeNode("T");
+    indentLevel++;
+  }
+  (
     S() 
     | {}
+  )
+  {
+    indentLevel--;
+  }
 }
 
 void S() : {}
 {
-    A() <AT> B() 
+  {
+    writeNode("S");
+    indentLevel++;
+  }
+  A() 
+  {
+    writeTerminal("AT");
+  }
+  <AT> B()
+  {
+    indentLevel--;
+  }
 }
 
 void A() : {}
 {
-  <EQ>  F() 
+  {
+    writeNode("A");
+    indentLevel++;
+  }
+  {
+    writeTerminal("EQ");
+  }
+  <EQ> F()
+  {
+    indentLevel--;
+  }
 }
 
 void G() : {}
 {
-    <DOLLAR> X() 
-    | <AND> A() <EQ> F() 
+  {
+    writeNode("G");
+    indentLevel++;
+  }
+  (
+    {
+      writeTerminal("DOLLAR");
+    }
+    <DOLLAR> X()
+    | 
+    {
+      writeTerminal("AND");
+    }
+    <AND> A() 
+    {
+      writeTerminal("EQ");
+    }
+    <EQ> F()
+  )
+  {
+    indentLevel--;
+  }
 }
 
 void F() : {}
 {
-    X() 
+  {
+    writeNode("F");
+    indentLevel++;
+  }
+  X()
+  {
+    indentLevel--;
+  }
 }
 
 void X() : {}
 {
-    {}
+  {
+    writeNode("X");
+    indentLevel++;
+  }
+  {}
+  {
+    indentLevel--;
+  }
 }
 
 void B() : {}
 {
-    <EQ> L() 
-    | <ID> K() 
+  {
+    writeNode("B");
+    indentLevel++;
+  }
+  (
+    {
+      writeTerminal("EQ");
+    }
+    <EQ> L()
+    | 
+    {
+      writeTerminal("ID");
+    }
+    <ID> K()
+  )
+  {
+    indentLevel--;
+  }
 }
 
 void L() : {}
 {
-    S() X() <ID> Y() 
+  {
+    writeNode("L");
+    indentLevel++;
+  }
+  S() X() 
+  {
+    writeTerminal("ID");
+  }
+  <ID> Y()
+  {
+    indentLevel--;
+  }
 }
 
 void K() : {}
 {
-    Y() 
- 
+  {
+    writeNode("K");
+    indentLevel++;
+  }
+  Y()
+  {
+    indentLevel--;
+  }
 }
 
 void Y() : {}
 {
+  {
+    writeNode("Y");
+    indentLevel++;
+  }
   {}
+  {
+    indentLevel--;
+  }
 }
