@@ -77,7 +77,6 @@ TOKEN : { <EQ : [">", "<"] > }
 TOKEN : { <AT : ["(", ")"] > }
 TOKEN : { <AND : ["{", "}"] > }
 
-
 SKIP : { " " | "\t" | "\n" | "\r" }
 
 void parse() : {}
@@ -123,34 +122,42 @@ void T() : {}
   }
 }
 
-void S() : {}
+void S() : {} 
 {
+  LOOKAHEAD(A()<AT>B())  
+  {
+    writeNode("S"); 
+    indentLevel++;       
+  }
+  A() { writeTerminal("AT"); }  <AT> B()              
+  { 
+    indentLevel--;      
+  }
+  |
+  B() { writeTerminal("AND"); } <AND> A()              
   {
     writeNode("S");
-    indentLevel++;
-  }
-  A() 
-  {
-    writeTerminal("AT");
-  }
-  <AT> B()
-  {
-    indentLevel--;
+    indentLevel++;      
   }
 }
 
-void A() : {}
+void A() : {} 
 {
+  LOOKAHEAD(<EQ> F())  
   {
-    writeNode("A");
-    indentLevel++;
+    writeNode("A");     
+    indentLevel++;      
   }
-  {
-    writeTerminal("EQ");
+  <EQ> F()              
+  { 
+    writeTerminal("EQ");  
+    indentLevel--;      
   }
-  <EQ> F()
+  |
+  B() G()               
   {
-    indentLevel--;
+    writeNode("A");     
+    indentLevel++;      
   }
 }
 
@@ -180,27 +187,43 @@ void G() : {}
   }
 }
 
-void F() : {}
+void F() : {} 
 {
+  LOOKAHEAD(X())  
   {
-    writeNode("F");
-    indentLevel++;
+    writeNode("F");     
+    indentLevel++;      
   }
-  X()
+  X()            
+  { 
+    indentLevel--;      
+  }
+  |
+  S()X()              
   {
-    indentLevel--;
+    writeNode("F");     
+    indentLevel++;      
   }
 }
 
-void X() : {}
+void X() : {} 
 {
+  LOOKAHEAD(<AT>B() <EQ> F())  
   {
-    writeNode("X");
-    indentLevel++;
+    writeNode("X");     
+    indentLevel++;      
   }
-  {}
+  <AT> B() <EQ> F()     
+  { 
+    writeTerminal("AT");
+    writeTerminal("EQ");  
+    indentLevel--;      
+  }
+  |
   {
-    indentLevel--;
+    writeNode("X");     
+    indentLevel++;      
+    indentLevel--;      
   }
 }
 
@@ -226,31 +249,41 @@ void B() : {}
   }
 }
 
-void L() : {}
+void L() : {} 
 {
+  LOOKAHEAD(S()X()<ID>Y())  
   {
-    writeNode("L");
-    indentLevel++;
+    writeNode("L");     
+    indentLevel++;      
   }
-  S() X() 
-  {
-    writeTerminal("ID");
+  S()X() { writeTerminal("ID"); } <ID> Y()    
+  { 
+    indentLevel--;      
   }
-  <ID> Y()
+  |
+  X() { writeTerminal("ID"); } <ID> Y()        
   {
-    indentLevel--;
+    writeNode("L");     
+    indentLevel++;      
   }
 }
 
-void K() : {}
+void K() : {} 
 {
+  LOOKAHEAD(Y()) 
   {
-    writeNode("K");
-    indentLevel++;
+    writeNode("K");      
+    indentLevel++;       
   }
-  Y()
+  Y() 
   {
-    indentLevel--;
+    indentLevel--;       
+  }
+  |
+  S() Y() 
+  {
+    writeNode("K");      
+    indentLevel++;       
   }
 }
 
@@ -260,7 +293,25 @@ void Y() : {}
     writeNode("Y");
     indentLevel++;
   }
-  {}
+  (
+    LOOKAHEAD(<DOLLAR> X() <ID> Y())
+    {
+      writeTerminal("ID");
+      writeNode("Y");
+      indentLevel++;
+    }
+    <DOLLAR> X() <ID> Y()
+    {}
+    |
+    A() <EQ> L()
+    {
+      writeTerminal("EQ");
+      writeNode("Y");
+      indentLevel++;
+    }
+    |
+    {}  // ϵ (epsilon production)
+  )
   {
     indentLevel--;
   }

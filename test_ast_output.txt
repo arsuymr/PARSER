@@ -2,9 +2,9 @@ E
   T
     S
       A
-        =
         F
           X
+        =
       @
       B
         Id
