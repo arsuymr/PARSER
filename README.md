@@ -15,7 +15,9 @@ The EXP language consists of:
 
 The grammar **G** is defined as follows:  
 G = ⟨ N, T, S, P ⟩ with **P**: 
-S → A @ B | B & A | ε A → B $ | S = S B → A id | id S
+S → A @ B | B & A | ε
+A → B $ | S = S 
+B → A id | id S
 
 ## Grammar Design
 The grammar is transformed to:  
