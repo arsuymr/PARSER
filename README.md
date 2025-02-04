@@ -9,7 +9,13 @@ The EXP language consists of:
 - **Operators ($):** `+`, `*`, `/`.  
 - **Relational Operators (=):** `>`, `<`.  
 - **Delimiters (@):** `(`, `)`.  
-- **Block Delimiters (&):** `{`, `}`.  
+- **Block Delimiters (&):** `{`, `}`.
+
+## Grammar
+
+The grammar **G** is defined as follows:  
+G = ⟨ N, T, S, P ⟩ with **P**: 
+S → A @ B | B & A | ε A → B $ | S = S B → A id | id S
 
 ## Grammar Design
 The grammar is transformed to:  
@@ -29,8 +35,8 @@ A parsing table is constructed. However, conflicts arise, making the grammar non
 ## Usage
 ```bash
 # Clone the repository
-git clone https://github.com/username/repository.git
-cd repository
+git clone https://github.com/arsuymr/PARSER
+cd PARSER
 
 # Compile and run with JavaCC
 javacc ExpParser.jj
